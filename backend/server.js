@@ -60,7 +60,7 @@ app.post('/login', (req, res) => {
 
             })
         }else{
-            return res.json({Error: "Usuario no existe"});
+            return res.json({Error: "Usuario no registrado"});
         }
     })
 })

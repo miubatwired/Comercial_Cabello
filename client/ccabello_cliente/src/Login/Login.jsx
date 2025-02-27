@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import ellipse from './assets/login/ellipse.svg'
-import tienda from './assets/login/tienda.png'
-import logo from './assets/login/logo.svg'
+import ellipse from '../assets/login/ellipse.svg'
+import tienda from '../assets/login/tienda.svg'
+import logo from '../assets/login/logo.svg'
 import './Login.css'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -25,7 +25,7 @@ function Login() {
         })
         .then(err => console.log(err));
     }
-  
+
     return (
       <>
         <div className='layout'>
@@ -36,7 +36,7 @@ function Login() {
             </div>
             <div className="login">
             <img src={logo} className='logo' alt='logo' />
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} required id="loginform">
               <p className='label'>Usuario</p>
               <label> 
                 <input className='input'

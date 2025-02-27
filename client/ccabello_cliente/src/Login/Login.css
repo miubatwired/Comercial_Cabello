@@ -43,8 +43,9 @@ body, html, #root {
 }
 
 .tienda{  
-  height:105%;
+  height:103%;
   position: absolute;
+  margin-top: 6%;
   z-index: 2;
   position: absolute;
   top: 0;
@@ -53,7 +54,7 @@ body, html, #root {
 }
 
 .logo {
-  height: 30%; /* Reduce size if needed */
+  height: 32%; /* Reduce size if needed */
   margin-top: 7%;
 }
 
@@ -94,6 +95,12 @@ body, html, #root {
   text-overflow:ellipsis;
 }
 
+.button:hover{
+  border-color: white;
+  background-color: #9b1313ec;
+  color:white;
+}
+
 .rectangle{
   background-color: #9B1313;
   height: 55%;
@@ -105,5 +112,5 @@ body, html, #root {
   position: relative;
   margin-left: 0;
   position: left;
-  max-width: 40%;
+  max-width: 60%;
 }

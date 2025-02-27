@@ -1,7 +1,7 @@
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import Login from './Login';
+import Login from './Login/Login';
 import RegisterUser from './RegisterUser';
-import Inventario from './Inventario'
+import Inventario from './Inventario/Inventario'
 
 
 
