@@ -32,8 +32,7 @@ function Logout(){
             {
                 auth  ?
                 <div>
-                    <h1>Inventario</h1>
-                    <button onClick={handleDelete}>Cerrar Sesión</button>
+                    <a onClick={handleDelete} style={{cursor: 'pointer'}}>Cerrar Sesión</a>
                 </div>
                 :
                 <div>

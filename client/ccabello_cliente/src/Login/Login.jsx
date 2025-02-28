@@ -42,6 +42,7 @@ function Login() {
                 <input className='input'
                   type="text" 
                   required
+                  maxLength={12}
                   name='username'
                   onChange={(e) => setValues({...values, username: e.target.value})}
                 />
@@ -51,6 +52,7 @@ function Login() {
                 <input className='input'
                   type="password" 
                   required
+                  maxLength={20}
                   name='password'
                   onChange={(e) => setValues({...values, password: e.target.value})}
                 />

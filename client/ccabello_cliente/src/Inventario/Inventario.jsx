@@ -3,8 +3,16 @@ import './Inventario.css';
 import tienda from '../assets/inventario/tienda.svg';
 import comercial from '../assets/inventario/comercial.svg';
 import cabello from '../assets/inventario/cabello.svg';
+import inventario from '../assets/inventario/inventarioo.svg';
+import inventario_icon from '../assets/inventario/inventario_icon.svg'
+import usericon from '../assets/inventario/user.svg'
+import usuarios from '../assets/inventario/usuarios.svg'
+import logoutIcon from '../assets/inventario/logout.svg'
 import {Link} from "react-router-dom";
 import pventa from '../assets/inventario/pventa.svg';
+import DataTableComponent from './DataTableComponent';
+import GetUser from './GetUser';
+import Logout from '../Logout'
 
 class Inventario extends Component {
   constructor(props) {
@@ -25,7 +33,7 @@ class Inventario extends Component {
       this.ui.current.onclick = this.closeNavbar;
       this.sleep(250).then(() => {this.sidenavmenu.current.style.display = 'flex';
       });
-      document.body.style.backgroundColor = 'rgba(0,0,0,0.4)';
+      this.ui.current.style.opacity = '.5';
     }
   }
 
@@ -36,6 +44,7 @@ class Inventario extends Component {
       this.ui.current.onclick = null;
       this.sidenavmenu.current.style.display = 'none';
       document.body.style.backgroundColor = 'rgba(255, 255, 255, 0)';
+      this.ui.current.style.opacity = '1';
     }
   }
   
@@ -64,23 +73,34 @@ class Inventario extends Component {
                     <Link to="/pventa"> Punto de Venta </Link>
                 </div>
                 <div className='menuItem'>
-                    <img src={pventa} alt="Punto de Venta Icon" className='icon'/>
-                    <Link to="/pventa"> Punto de Venta </Link>
+                    <img src={inventario_icon} alt="Inventario" className='icon'/>
+                    <Link to="/pventa"> Inventario </Link>
                 </div>
                 <div className='menuItem'>
-                    <img src={pventa} alt="Punto de Venta Icon" className='icon'/>
-                    <Link to="/pventa"> Punto de Venta </Link>
+                    <img src={usuarios} alt="Administración de Usuarios" className='icon'/>
+                    <Link to="/pventa"> Administración de Usuarios </Link>
                 </div>
                 <div className='menuItem'>
-                    <img src={pventa} alt="Punto de Venta Icon" className='icon'/>
-                    <Link to="/pventa"> Punto de Venta </Link>
+                    <img src={logoutIcon} alt="Cerrar sesión" className='icon'/>
+                    <Logout></Logout>
                 </div>
                 <Link to="/login">  </Link>
               </div>
             </div>
           </div>
           <div className="ui" id="ui" ref={this.ui}>
-            
+            <div id="header">
+              <img src={inventario} id="logoInventario"></img>
+            </div>
+            <div id="headbar">
+            <div id="userinfo">
+              <img src={usericon}/>
+              <div id="username">
+              <GetUser></GetUser>
+              </div>
+            </div>
+            </div>
+              <DataTableComponent></DataTableComponent>
           </div>
         </div>
       </>
