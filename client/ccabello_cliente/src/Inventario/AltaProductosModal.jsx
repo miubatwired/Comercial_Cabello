@@ -1,5 +1,5 @@
 import './Modal.css'
-import PropTypes from 'prop-types';
+import PropTypes, { any } from 'prop-types';
 import axios from 'axios'
 import { useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
@@ -112,6 +112,8 @@ function AltaProductosModal({ closeModal }) {
                                     type='number'
                                     id="codigo"
                                     name='codigo'
+                                    step="any"
+                                    min='0'
                                     value={values.codigo}
                                     onChange={handleChange}
                                     onKeyDown={handleKeyDown}
@@ -123,6 +125,8 @@ function AltaProductosModal({ closeModal }) {
                                     required
                                     type='number'
                                     id="precio"
+                                    min='0'
+                                    step='0.01'
                                     name='precio'
                                     value={values.precio}
                                     onChange={handleChange}
@@ -135,6 +139,8 @@ function AltaProductosModal({ closeModal }) {
                                     required
                                     type='number'
                                     id="cantidad_minima"
+                                    min='0'
+                                    step="any"
                                     name='cantidad_minima'
                                     value={values.cantidad_minima}
                                     onChange={handleChange}
@@ -148,6 +154,8 @@ function AltaProductosModal({ closeModal }) {
                                     type='number'
                                     id="cantidad"
                                     name='cantidad'
+                                    min='0'
+                                    step="any"
                                     value={values.cantidad}
                                     onChange={handleChange}
                                     onKeyDown={handleKeyDown}

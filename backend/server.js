@@ -126,7 +126,7 @@ app.get('/data', (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
         return;
       }
-      res.json(results); // Results are directly available here
+      res.json(results); 
     });
   });
 
