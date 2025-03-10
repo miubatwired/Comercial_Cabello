@@ -1,8 +1,7 @@
 import  { Component, createRef } from 'react';
 import './Inventario.css';
 import tienda from '../assets/inventario/tienda.svg';
-import comercial from '../assets/inventario/comercial.svg';
-import cabello from '../assets/inventario/cabello.svg';
+import comercial from '../assets/inventario/ComercialCabello.svg';
 import inventario from '../assets/inventario/inventarioo.svg';
 import inventario_icon from '../assets/inventario/inventario_icon.svg'
 import usericon from '../assets/inventario/user.svg'
@@ -10,9 +9,13 @@ import usuarios from '../assets/inventario/usuarios.svg'
 import logoutIcon from '../assets/inventario/logout.svg'
 import {Link} from "react-router-dom";
 import pventa from '../assets/inventario/pventa.svg';
+import tienda_bg from '../assets/inventario/tienda_bg.svg';
 import DataTableComponent from './DataTableComponent';
 import GetUser from './GetUser';
+import axios from 'axios';
 import Logout from '../Logout'
+import AltaProductos from './AltaProductos';
+import PropTypes from 'prop-types';
 
 class Inventario extends Component {
   constructor(props) {
@@ -21,15 +24,43 @@ class Inventario extends Component {
     this.storeButton = createRef();
     this.ui = createRef();
     this.sidenavmenu = createRef();
+    this.state = {
+      isAuthenticated: false,
+  };
     this.openNavbar = this.openNavbar.bind(this);
     this.closeNavbar = this.closeNavbar.bind(this);
   }
 
+  async componentDidMount() {
+    console.log('Component Mounted, isAuthenticated prop:', this.state.isAuthenticated);
+    await this.verifyUser();
+  }
+
+  async verifyUser() {
+    try {
+      axios.defaults.withCredentials = true;
+      const res = await axios.get('http://localhost:8081/');
+      if (res.data.Status !== 'Exito') {
+        window.location.replace('/');
+        console.log(" notverified");
+
+      } else {
+        this.setState({ isAuthenticated: true});
+        console.log("verified");
+      }
+    } catch (error) {
+      console.error('Error verifying user', error);
+    }
+  }
 
   openNavbar() {
     if (this.sidenav.current && this.storeButton.current && this.ui.current) {
       this.sidenav.current.style.width = '300px';
-      this.storeButton.current.style.marginLeft = '16%';
+      this.sidenav.current.style.background = `url(${tienda_bg}), #9B1313`;
+      this.sidenav.current.style.backgroundPosition = 'left 5%';
+      this.sidenav.current.style.backgroundPositionX = 'center';
+      this.sidenav.current.style.backgroundSize = '350%';
+      this.storeButton.current.style.marginLeft = '28%';
       this.ui.current.onclick = this.closeNavbar;
       this.sleep(250).then(() => {this.sidenavmenu.current.style.display = 'flex';
       });
@@ -40,6 +71,7 @@ class Inventario extends Component {
   closeNavbar() {
     if (this.sidenav.current && this.storeButton.current && this.ui.current) {
       this.sidenav.current.style.width = '60%';
+      this.sidenav.current.style.background = '#9B1313';
       this.storeButton.current.style.marginLeft = '10%';
       this.ui.current.onclick = null;
       this.sidenavmenu.current.style.display = 'none';
@@ -53,9 +85,12 @@ class Inventario extends Component {
   }
 
   render() {
+
     return (
       <>
-        <div id="screen">
+      {
+        this.state.isAuthenticated ?(
+          <div id="screen">
           <div id="sidenavbar">
             <div className="sidenav" id="mySidenav" ref={this.sidenav}>
               <img
@@ -66,24 +101,22 @@ class Inventario extends Component {
                 alt="Store Icon"
               />
               <div className="sidenavmenu" ref={this.sidenavmenu}>
-                <img src={comercial} alt="Comercial Icon" />
-                <img src={cabello} alt="Cabello Icon" />
-                <div className='menuItem'>
-                    <img src={pventa} alt="Punto de Venta Icon" className='icon'/>
-                    <Link to="/pventa"> Punto de Venta </Link>
-                </div>
-                <div className='menuItem'>
-                    <img src={inventario_icon} alt="Inventario" className='icon'/>
-                    <Link to="/pventa"> Inventario </Link>
-                </div>
-                <div className='menuItem'>
-                    <img src={usuarios} alt="Administración de Usuarios" className='icon'/>
-                    <Link to="/pventa"> Administración de Usuarios </Link>
-                </div>
-                <div className='menuItem'>
-                    <img src={logoutIcon} alt="Cerrar sesión" className='icon'/>
-                    <Logout></Logout>
-                </div>
+                <img src={comercial} alt="Comercial Icon" id="logo"/>
+                <ul className="menu">
+                  <li className="menu-item">
+                      <img src={pventa}  alt="Punto de Venta" style={{width: "25%"}}/> <span>Punto de Venta</span>
+                  </li>
+                  <li className="menu-item" style={{paddingLeft: "22px"}} onClick={this.closeNavbar}>
+                      <img src={inventario_icon} className="imageIcon" alt="Inventario" style={{width: "25%"}}/> <span>Inventario</span>
+
+                  </li>
+                  <li className="menu-item" style={{paddingLeft: "19px"}}>
+                      <img src={usuarios} className="imageIcon" alt="Messages" style={{width: "25%"}} /> <span style={{paddingLeft: "0"}}>Administración de Usuarios</span>
+                  </li>
+                  <li className="menu-item">
+                      <img src={logoutIcon} className="imageIcon" alt="Cerrar Sesión"/> <Logout/>
+                  </li>
+              </ul>    
                 <Link to="/login">  </Link>
               </div>
             </div>
@@ -93,19 +126,34 @@ class Inventario extends Component {
               <img src={inventario} id="logoInventario"></img>
             </div>
             <div id="headbar">
-            <div id="userinfo">
-              <img src={usericon}/>
-              <div id="username">
-              <GetUser></GetUser>
+              <div id="userinfo">
+                <img src={usericon}/>
+                <div id="username">
+                <GetUser></GetUser>
+                </div>
               </div>
-            </div>
+              <div id='buscarDiv'>
+                <p style={{color:'black',fontSize:'120%',marginBottom:'0',marginTop:'0'}}>Buscar Inventario</p>
+                <input id='inputBuscar' placeholder='Nombre o código del producto'></input>
+              </div>
+              <div id='opciones'>
+              <AltaProductos/>
+              </div>
             </div>
               <DataTableComponent></DataTableComponent>
           </div>
         </div>
+        )
+:
+        <div>
+        </div>
+  }
       </>
     );
   }
 }
+Inventario.propTypes = {
+  navigate: PropTypes.func.isRequired,
+};
 
 export default Inventario;

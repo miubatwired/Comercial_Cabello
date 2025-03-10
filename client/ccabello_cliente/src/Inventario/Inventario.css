@@ -8,6 +8,7 @@
     flex-direction: row;
     height: 100%;
     margin-top: 0;
+    background-color: #e9eef2;
 }
 
 #sidenavbar{
@@ -24,7 +25,7 @@
  /* The side navigation menu */
 .sidenav{
     height: 100%;
-    background-color: #9B1313;
+    background-color:#9B1313;
     min-width: 60%;
     width: 60%;
     margin-top: 0;
@@ -42,6 +43,10 @@
   max-width: 85%;
   margin-left: 5%;
 }
+
+body{
+  overflow-y: hidden;
+}
   
   /* The navigation menu links */
   .sidenav link {
@@ -57,6 +62,7 @@
     display: none;
     flex-direction: column;
     justify-items: space-between;
+    align-items: left;
   }
 
   .sidenavmenu a{
@@ -66,17 +72,9 @@
     transition: 4s;
     padding-top: 10%;
   }
-  
-  .menuItem{
-    display: flex;
-    flex-direction: row;
-    font-size: 23px;
-    
-
-  }
 
   .icon{
-    height: 1%;
+    height: 5vw;
   }
 
   
@@ -153,6 +151,8 @@
   display: flex;
   flex-direction: row;
   min-height: 15%;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #userinfo{
@@ -164,4 +164,55 @@
 
 #username{
   min-width: 90%;
+}
+
+#logo{
+  height: 5vw;
+}
+
+#buscarDiv{
+  display: flex;
+  flex-direction: column;
+}
+
+#inputBuscar{
+  background-color:#D4D4D4;
+  border: 0;
+  color: black;
+  line-height: 190%;
+  width: 110%;
+}
+
+#opciones{
+  display:flex;
+  flex-direction: column;
+  min-width: 15%;
+}
+
+
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition:  0.3s ease;
+}
+
+.menu-item:hover {
+  margin-left: 10%;
+}
+
+.menu-item img {
+  margin-right: 8px;
+  width: 30%; 
+  height: 100%; 
+  object-fit: contain; 
+}
+.menu-item span{
+  font-size: 1.2em;
+}
+
+body{
+  color: white;
 }

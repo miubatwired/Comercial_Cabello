@@ -32,7 +32,7 @@ function Logout(){
             {
                 auth  ?
                 <div>
-                    <a onClick={handleDelete} style={{cursor: 'pointer'}}>Cerrar Sesión</a>
+                    <a onClick={handleDelete} style={{cursor: 'pointer',fontSize: '1.2em'}}>Cerrar Sesión</a>
                 </div>
                 :
                 <div>

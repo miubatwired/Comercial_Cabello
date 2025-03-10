@@ -13,7 +13,7 @@ function DataTableComponent() {
       style: {
         backgroundColor: "#9B1313",
         color: "white",
-        fontSize: "230%",
+        fontSize: "170%",
         height: "200%",
       },
     },
@@ -56,7 +56,7 @@ function DataTableComponent() {
     { name: 'Cantidad', selector: (row) => row.cantidad },
     { name: 'Código', selector: (row) => row.codigo },
     { name: 'Precio', selector: (row) => row.precio },
-    { name: 'Stock Mínimo', selector: (row) => row.cantidad_minima},
+    { name: 'Cantidad Mínima', selector: (row) => row.cantidad_minima},
     {
       name: '',
       cell: (row) => (

@@ -65,6 +65,37 @@ app.post('/login', (req, res) => {
     })
 })
 
+app.post('/insertarProducto',(req, res) => {
+    const sql = "INSERT INTO productos(codigo,nombre,precio,cantidad,cantidad_minima) VALUES(?,?,?,?,?)";
+    const sql_select_codigo = "SELECT * from productos where codigo=?";
+    const sql_select_nombre = "SELECT * from productos where nombre=?";
+    const num_values = [Number(req.body.codigo), Number(req.body.cantidad), Number(req.body.cantidad_minima), Number(req.body.precio)];
+    const values = [req.body.codigo,req.body.nombre,req.body.precio,req.body.cantidad, req.body.cantidad_minima];
+    db.query(sql_select_codigo, [req.body.codigo], (err,data) => {
+        console.log(data.sql);
+        if(data.length>0){
+            return res.json({Error: "El CÓDIGO del producto YA está REGISTRADO"})
+        }else{
+            db.query(sql_select_nombre, [req.body.nombre], (err, data) => {
+                if(data.length>0){
+                    console.log(data.sql);
+                    return res.json({Error: "El NOMBRE del producto YA está REGISTRADO"});
+                }else{
+                    if(Number.isInteger(num_values[0]) && Number.isInteger(num_values[1]) && Number.isInteger(num_values[2])){
+                        db.query(sql, values, (err,data) => {
+                            if(err) return res.json({Error: "Ha habido un error al insertar el producto"});
+                            return res.json({Status: "Exito"});
+                        })
+                    }else{
+                        return res.json({Error: "Por favor, ingrese cantidades ENTERAS"});
+                    }
+                }
+            })
+        }
+    })
+})
+
+
 const verifyUser = (req, res, next) => {
     const token = req.cookies.token;
     if(!token){
@@ -119,11 +150,10 @@ app.get('/GetUser', (req, res) => {
     const token = req.cookies.token;
 
     if (!token) {
-        return res.status(401).json({ Error: "No token provided" }); // Still handle missing token
+        return res.status(401).json({ Error: "No token provided" });
     }
 
     try {
-        // Decode the token (WITHOUT verification)
         const tokenDecoded = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         const username = tokenDecoded.name;
 
@@ -161,4 +191,3 @@ app.get('/GetUser', (req, res) => {
 app.listen(8081, () => {
     console.log('Conectado al backend!');
 })
-

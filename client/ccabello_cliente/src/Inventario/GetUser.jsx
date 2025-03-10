@@ -22,8 +22,8 @@ function GetUser(){
 
       return(
         <>
-            <h2>{name}</h2>
-            {<h3>{rol}</h3>}
+            <h2 style={{marginBottom: '0',marginLeft:'7%', textAlign:'center'}}>{name}</h2>
+            <p style={{textAlign:'center',fontSize:'130%',marginTop:'0'}}>{rol}</p>
         </>
       )
 }

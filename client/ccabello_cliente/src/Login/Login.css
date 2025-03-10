@@ -4,6 +4,7 @@ body, html, #root {
   margin: 0;
   height: 100%;
   width: 100%;
+  background-color: #e9eef2;
 }
 
 .layout {
@@ -54,7 +55,7 @@ body, html, #root {
 }
 
 .logo {
-  height: 32%; /* Reduce size if needed */
+  height: 32%;
   margin-top: 7%;
 }
 
@@ -114,3 +115,32 @@ body, html, #root {
   position: left;
   max-width: 60%;
 }
+
+error {
+  display: none;
+  opacity: 0;
+  translate: 0 -15vh;
+  transition-property: display, opacity, translate;
+  transition-duration: 0.5s;
+  transition-behavior: allow-discrete; /* Enables `display` transition */
+  margin-top: 2%;
+  margin-bottom: 0;
+}
+
+error[open] {
+  display: block;
+  opacity: 1;
+  translate: 0 0;
+
+  @starting-style {
+    opacity: 0;
+    translate: 0 -15vh;
+  }
+}
+
+
+p{
+  margin-top: 2%;
+  margin-bottom: 0;
+}
+
