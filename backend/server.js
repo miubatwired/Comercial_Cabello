@@ -184,7 +184,7 @@ app.get('/GetUser', (req, res) => {
 
     } catch (error) {
         console.error("Token decoding error:", error);
-        return res.status(400).json({ Error: "Invalid token format" }); // Handle decoding errors
+        return res.status(400).json({ Error: "Invalid token format" });
     }
 })
 
