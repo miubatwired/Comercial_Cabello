@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css?family=Josefin+Sans');
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
 *{
   font-family: 'Josefin Sans', sans-serif;
 }
@@ -141,7 +142,7 @@ body{
     display: hidden;
 }
 
-#logoInventario{
+#logoInventario, #logoUsuarios{
   margin-left: 43%;
   margin-top: 2%;
   width: 50%;
@@ -215,4 +216,39 @@ body{
 
 body{
   color: white;
+}
+
+.button_faltantes{
+  background-color: #CD1C18;
+  color: white;
+  transition: 0.3s;
+  align-items: end;
+}
+
+.button_faltantes:hover{
+  background-color: white;
+  color: #CD1C18;
+  border-color: white;
+  transition: 0.3s;
+}
+
+.button_faltantes:hover .filter-white{
+  filter: invert(0%) sepia(100%) saturate(7500%) hue-rotate(79deg) brightness(88%) contrast(110%);
+}
+
+.filter-white{
+  filter: invert(99%) sepia(0%) saturate(2509%) hue-rotate(330deg) brightness(116%) contrast(100%);
+}
+
+.button_delete{
+  background-color: #D9D9D9;
+  color: #CD1C18;
+  transition: 0.3s;
+}
+
+.button_delete:hover{
+  background-color: #CD1C18;
+  color: white;
+  border-color: white;
+  transition: 0.3s;
 }
