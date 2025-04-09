@@ -1,5 +1,5 @@
 import './Modal.css'
-import PropTypes, { any } from 'prop-types';
+import PropTypes from 'prop-types';
 import axios from 'axios'
 import { useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';

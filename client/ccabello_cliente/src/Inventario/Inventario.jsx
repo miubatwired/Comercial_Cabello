@@ -11,11 +11,12 @@ import {Link} from "react-router-dom";
 import pventa from '../assets/inventario/pventa.svg';
 import tienda_bg from '../assets/inventario/tienda_bg.svg';
 import DataTableComponent from './DataTableComponent';
-import GetUser from './GetUser';
+import GetUser from '../GetUser';
 import axios from 'axios';
 import Logout from '../Logout'
 import AltaProductos from './AltaProductos';
 import PropTypes from 'prop-types';
+import ListaDeFaltantes from './ListaDeFaltantes';
 
 class Inventario extends Component {
   constructor(props) {
@@ -29,6 +30,7 @@ class Inventario extends Component {
   };
     this.openNavbar = this.openNavbar.bind(this);
     this.closeNavbar = this.closeNavbar.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this); 
   }
 
   async componentDidMount() {
@@ -51,6 +53,10 @@ class Inventario extends Component {
     } catch (error) {
       console.error('Error verifying user', error);
     }
+  }
+
+  handleSearchChange(event) {
+    this.setState({ searchTerm: event.target.value });
   }
 
   openNavbar() {
@@ -103,15 +109,15 @@ class Inventario extends Component {
               <div className="sidenavmenu" ref={this.sidenavmenu}>
                 <img src={comercial} alt="Comercial Icon" id="logo"/>
                 <ul className="menu">
-                  <li className="menu-item">
+                  <li className="menu-item"  onClick={() => window.location.replace('/punto_de_venta')}>
                       <img src={pventa}  alt="Punto de Venta" style={{width: "25%"}}/> <span>Punto de Venta</span>
                   </li>
                   <li className="menu-item" style={{paddingLeft: "22px"}} onClick={this.closeNavbar}>
                       <img src={inventario_icon} className="imageIcon" alt="Inventario" style={{width: "25%"}}/> <span>Inventario</span>
 
                   </li>
-                  <li className="menu-item" style={{paddingLeft: "19px"}}>
-                      <img src={usuarios} className="imageIcon" alt="Messages" style={{width: "25%"}} /> <span style={{paddingLeft: "0"}}>Administración de Usuarios</span>
+                  <li className="menu-item" style={{paddingLeft: "19px"}} onClick={() => window.location.replace('/usuarios')} >
+                      <img src={usuarios} className="imageIcon" alt="Messages" style={{width: "25%"}} /> <span>Administración de Usuarios</span>
                   </li>
                   <li className="menu-item">
                       <img src={logoutIcon} className="imageIcon" alt="Cerrar Sesión"/> <Logout/>
@@ -134,13 +140,17 @@ class Inventario extends Component {
               </div>
               <div id='buscarDiv'>
                 <p style={{color:'black',fontSize:'120%',marginBottom:'0',marginTop:'0'}}>Buscar Inventario</p>
-                <input id='inputBuscar' placeholder='Nombre o código del producto'></input>
+                <input id='inputBuscar' placeholder='Nombre o código del producto'
+                 value={this.state.searchTerm} 
+                 onChange={this.handleSearchChange}
+                 ></input>
               </div>
               <div id='opciones'>
               <AltaProductos/>
+              <ListaDeFaltantes/>
               </div>
             </div>
-              <DataTableComponent></DataTableComponent>
+              <DataTableComponent searchTerm={this.state.searchTerm}></DataTableComponent>
           </div>
         </div>
         )
