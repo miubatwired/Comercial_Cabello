@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 import ConfirmacionModal from './ConfirmacionModal';
 
+
 function EliminarModal({ closeModal, codigo}) {
     const [openModal, setOpenModal] = useState(false);
     const [values, setValues] = useState({
@@ -20,7 +21,8 @@ function EliminarModal({ closeModal, codigo}) {
             try {
                 axios.delete(`http://localhost:8081/deleteProducto/${codigo}`).then(res => {
                     if (res.status === 200) {
-                        window.location.reload();
+                        localStorage.setItem('showToast', 'Producto eliminado con éxito');
+                        window.location.replace('/inventario');
                     } else {
                         console.error('Error eliminado el producto:', res.data);
                     }

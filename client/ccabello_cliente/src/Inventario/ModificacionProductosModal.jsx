@@ -1,5 +1,5 @@
 import './Modal.css'
-import PropTypes, { any } from 'prop-types';
+import PropTypes from 'prop-types';
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
@@ -45,6 +45,7 @@ function ModificacionProductosModal({ closeModal, codigo}) {
         axios.post('http://localhost:8081/modificarProducto', values)
             .then(res => {
                 if (res.data.Status === 'Exito') {
+                    localStorage.setItem('showToast', 'Producto modificado con éxito');
                     window.location.reload();
                 } else {
                     toast.error(res.data.Error);

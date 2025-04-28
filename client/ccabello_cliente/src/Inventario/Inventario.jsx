@@ -17,6 +17,8 @@ import Logout from '../Logout'
 import AltaProductos from './AltaProductos';
 import PropTypes from 'prop-types';
 import ListaDeFaltantes from './ListaDeFaltantes';
+import toast, { Toaster } from 'react-hot-toast';
+
 
 class Inventario extends Component {
   constructor(props) {
@@ -36,6 +38,12 @@ class Inventario extends Component {
   async componentDidMount() {
     console.log('Component Mounted, isAuthenticated prop:', this.state.isAuthenticated);
     await this.verifyUser();
+    const message = localStorage.getItem('showToast');
+    console.log(message);
+    if (message) {
+      toast.success(message);
+      localStorage.removeItem('showToast');
+    }
   }
 
   async verifyUser() {
@@ -97,6 +105,7 @@ class Inventario extends Component {
       {
         this.state.isAuthenticated ?(
           <div id="screen">
+            <Toaster/>
           <div id="sidenavbar">
             <div className="sidenav" id="mySidenav" ref={this.sidenav}>
               <img

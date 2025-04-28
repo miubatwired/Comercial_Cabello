@@ -4,6 +4,7 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 
+// eslint-disable-next-line no-unused-vars
 function ConfirmacionModal({ closeModal, codigo}) {
     const [value, setValue] = useState({
         cantidad: ''});
@@ -12,6 +13,7 @@ function ConfirmacionModal({ closeModal, codigo}) {
             try {
                 axios.delete(`http://localhost:8081/deleteProducto/${codigo}`).then(res => {
                     if (res.status === 200) {
+                        localStorage.setItem('showToast', 'Producto eliminado con éxito');
                         window.location.reload();
                     } else {
                         console.error('Error eliminado el producto:', res.data);
