@@ -16,6 +16,8 @@ import axios from 'axios';
 import Logout from '../Logout'
 import AltaUsuarios from './AltaUsuarios';
 import PropTypes from 'prop-types';
+import toast, { Toaster } from 'react-hot-toast';
+
 
 class Admin_usuarios extends Component {
   constructor(props) {
@@ -36,6 +38,11 @@ class Admin_usuarios extends Component {
   async componentDidMount() {
     console.log('Component Mounted, isAuthenticated prop:', this.state.isAuthenticated);
     await this.verifyUser();
+    const message = localStorage.getItem('showToast');
+    if (message) {
+      toast.success(message);
+      localStorage.removeItem('showToast');
+    }
   }
 
   async verifyUser() {
@@ -92,6 +99,7 @@ class Admin_usuarios extends Component {
       return (
         <>
          <div id="screen">
+          <Toaster />
           <div id="sidenavbar">
             <div className="sidenav" id="mySidenav" ref={this.sidenav}>
               <img
@@ -147,6 +155,7 @@ class Admin_usuarios extends Component {
       {
         this.state.isAuthenticated ?(
           <div id="screen">
+            <Toaster />
           <div id="sidenavbar">
             <div className="sidenav" id="mySidenav" ref={this.sidenav}>
               <img

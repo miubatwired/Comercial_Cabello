@@ -142,7 +142,7 @@ body{
     display: hidden;
 }
 
-#logoInventario, #logoUsuarios{
+#logoInventario, #logoUsuarios, #logoPuntoVenta{
   margin-left: 43%;
   margin-top: 2%;
   width: 50%;

@@ -20,7 +20,7 @@ function EliminarModal({ closeModal, codigo}) {
         if(values.cantidad <= 0){
             try {
                 axios.delete(`http://localhost:8081/deleteProducto/${codigo}`).then(res => {
-                    if (res.status === 200) {
+                    if (res.status == 200) {
                         localStorage.setItem('showToast', 'Producto eliminado con éxito');
                         window.location.replace('/inventario');
                     } else {

@@ -8,8 +8,14 @@ import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import PdfPrinter from "pdfmake";
 const salt = 10;
- 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(express.json());
 app.use(cors({
     origin: ["http://localhost:5173"],
@@ -36,6 +42,7 @@ db.connect((err) => {
 app.post('/register_user', (req, res) => {
     const sql = "INSERT INTO trabajadores(`nombre`,`apellido_paterno`,`apellido_materno`,`usuario`,`contrasena`,`rol`) VALUES (?)";
     const sql_select = "SELECT * from trabajadores where usuario=?";
+    const sql_password = "INSERT INTO contrasenas(`encriptada`,`texto_plano`) VALUES (?,?)";
     const values = [req.body.usuario.toLowerCase()];
     db.query(sql_select, values, (err, data) => {
         if(err) return res.json({Error: "Error al buscar el usuario"});
@@ -50,12 +57,49 @@ app.post('/register_user', (req, res) => {
                 req.body.usuario.toLowerCase(), hash, req.body.rol];
             db.query(sql, [values], (err, result) => {
                 if(err) return res.json({Error: "Error al registrar el usuario"});
-                return res.json({Status: 'Exito'});
+                db.query(sql_password, [hash, req.body.contrasena], (err, result) => {
+                    if(err) return res.json({Error: "Error al registrar la contraseña"});
+                    if(result.affectedRows > 0){
+                        return res.status(200).json({ message: 'Usuario registrado exitosamente' });
+                    }else{
+                        console.log(err);
+                    }
+                })
             })
         })
     }
     )
 })
+
+
+app.post('/update_user', (req, res) => {
+    const sql = "UPDATE trabajadores SET nombre=?, apellido_paterno=?, apellido_materno=?, contrasena=?, rol=? WHERE usuario=?";
+    const password_replace = "UPDATE  contrasenas SET encriptada=?, texto_plano=? WHERE encriptada=(SELECT contrasena from trabajadores WHERE usuario=?)";
+    bcrypt.hash(req.body.contrasena, salt, (err, hash) => {
+        if(err)return res.json({Error: "Error al encriptar la contraseña"});
+        const values = [req.body.nombre.toLowerCase().replace(/(^|\s)\S/gu, c => c.toUpperCase()), 
+            req.body.apellido_paterno.toLowerCase().replace(/(^|\s)\S/gu, c => c.toUpperCase()), 
+            req.body.apellido_materno.toLowerCase().replace(/(^|\s)\S/gu, c => c.toUpperCase()), 
+            hash,req.body.rol, req.body.usuario];
+        db.query(password_replace,[hash,req.body.contrasena,req.body.usuario] , (err, result) => {
+            if (err) {
+                console.error("Database error:", err);
+                return res.status(500).json({ Error: "Error updating user data" });
+            }
+            db.query(sql, values, (err, result) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return res.status(500).json({ Error: "Error updating password" });
+                }
+                if (result.affectedRows > 0) {
+                    return res.status(200).json({ message: 'User updated successfully' });
+                } else {
+                    console.log("No user updated");
+                }
+            });
+        });
+        })
+ });
 
 app.post('/login', (req, res) => {
     const sql = "SELECT * FROM trabajadores WHERE usuario = ?";
@@ -122,8 +166,9 @@ app.post('/modificarProducto',(req, res) => {
         if(data.length>1){
             return res.json({Error: "El CÓDIGO del producto YA está REGISTRADO"})
         }else{
+            const nombre_original = data[0].nombre;
             db.query(sql_select_nombre, [req.body.nombre], (err, data) => {
-                if(data.length>1){
+                if(data.length>0 && nombre_original != req.body.nombre){
                     console.log(data.sql);
                     return res.json({Error: "El NOMBRE del producto YA está REGISTRADO"});
                 }else{
@@ -185,6 +230,17 @@ app.get('/data', (req, res) => {
     });
   });
 
+  app.get('/dataPventa', (req, res) => {
+    db.query('SELECT * FROM PRODUCTOS WHERE cantidad > 0', (error, results, fields) => {
+      if (error) {
+        console.error('Database query error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+      res.json(results); 
+    });
+  });
+
   app.get('/dataFaltantes', (req, res) => {
     const sql = 'SELECT * FROM productos WHERE cantidad < cantidad_minima';
     db.query(sql, (error, results, fields) => {
@@ -198,7 +254,7 @@ app.get('/data', (req, res) => {
   });
 
   app.get('/data_usuarios', (req, res) => {
-    db.query('SELECT * FROM trabajadores', (error, results, fields) => {
+    db.query('SELECT usuario, nombre, apellido_paterno, apellido_materno, rol, texto_plano, contrasena FROM trabajadores,contrasenas WHERE encriptada=contrasena', (error, results, fields) => {
       if (error) {
         console.error('Database query error:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -271,7 +327,7 @@ app.get('/GetUser', (req, res) => {
           return res.status(400).json({ Error: "Username not found in token" });
         }
 
-        const sql = 'SELECT nombre, apellido_paterno, rol FROM trabajadores WHERE usuario = ?';
+        const sql = 'SELECT usuario, nombre, apellido_paterno, rol FROM trabajadores WHERE usuario = ?';
 
         db.query(sql, [username], (err, results) => {
             if (err) {
@@ -289,7 +345,8 @@ app.get('/GetUser', (req, res) => {
             const lastName = user.apellido_paterno;
             const name = firstName + " " + lastName;
             const rol = user.rol;
-            return res.json({ name,rol });
+            const username = user.usuario;
+            return res.json({ name,rol, username});
         });
 
     } catch (error) {
@@ -297,6 +354,25 @@ app.get('/GetUser', (req, res) => {
         return res.status(400).json({ Error: "Invalid token format" });
     }
 })
+
+app.get('/GetUserData/:user', (req, res) => {  
+    const usuario_completo = req.params.user;
+    const sql = 'SELECT * from trabajadores, contrasenas WHERE contrasena=encriptada AND usuario = ?';
+
+    db.query(sql, [usuario_completo], (err, results) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ Error: "Error fetching user data" });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ Error: "User not found" });
+        }
+        return res.status(200).json(results[0]);
+    });
+})
+
+
 
 app.listen(8081, () => {
     console.log('Conectado al backend!');
@@ -370,3 +446,159 @@ app.get('/generar-pdf', (req, res) => {
         console.log('PDF generated and ready for download');
       });
 })
+
+app.delete('/deleteUser/:usuario', (req, res) => {
+    const codigo = req.params.usuario;
+    const sql = 'DELETE FROM trabajadores WHERE usuario = ?';
+
+    db.query(sql, [codigo], (err, result) => { 
+        if (err) {
+            return res.status(500).json({ Error: "Error al eliminar el usuario" }); 
+        }
+        if (result.affectedRows > 0) {
+            res.status(200).json({ message: 'Se eliminó el usuario éxitosamente' });
+        } else {
+            res.status(404).json({ error: 'No se encontró el usuario' });
+        }
+    });
+});
+
+app.post('/realizarCobro', async (req, res) => {
+    try {
+        const [ventaResult] = await db.promise().query("SELECT MAX(num_venta) FROM ventas;");
+        let num_venta = ventaResult[0]["MAX(num_venta)"] ? parseInt(ventaResult[0]["MAX(num_venta)"]) + 1 : 1;
+
+        const [fechaResult] = await db.promise().query("SELECT CURDATE()");
+        const fecha_query = fechaResult[0]['CURDATE()'];
+        const fecha_obj = new Date(fecha_query);
+        const fechaISO = fecha_obj.toISOString().slice(0, 10);
+
+        let faltantes = [];
+        let error = "";
+
+        await Promise.all(req.body.data.map(async (producto) => {
+            const [productResult] = await db.promise().query("SELECT * FROM productos WHERE codigo = ?", [producto.codigo]);
+            if (productResult.length > 0) {
+                const cantidad_actual = productResult[0].cantidad;
+                const cantidad_minima = productResult[0].cantidad_minima;
+                if (cantidad_actual - producto.cantidad >= 0) {
+                    const sql_insert = "INSERT INTO ventas(num_venta, producto, cantidad, total, fecha, usuario) VALUES(?,?,?,?,?,?)";
+                    const valores = [num_venta, producto.codigo, producto.cantidad, req.body.costo, fechaISO, req.body.username];
+                    await db.promise().query(sql_insert, valores);
+        
+                    const sql_update = "UPDATE productos SET cantidad = cantidad - ? WHERE codigo = ?";
+                    await db.promise().query(sql_update, [producto.cantidad, producto.codigo]);
+
+                    if (cantidad_actual - producto.cantidad < cantidad_minima) {
+                        faltantes.push({
+                            codigo: producto.codigo,
+                            nombre: producto.nombre,
+                            cantidad: cantidad_actual - producto.cantidad,
+                        });
+                    }
+                }else{
+                    error = `Producto ${producto.nombre} sin existencias`;
+                }
+            }else{
+                return res.status(404).json({ Error: `Producto con código ${producto.codigo} no encontrado` });
+            }
+        }));
+        if (error) {
+            return res.json({ Error: error });
+        }else{
+            console.log(faltantes)
+            return res.status(200).json({
+                Status: "Exito",
+                message: "Venta realizada con éxito",
+                Faltantes: faltantes
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ Error: "Ocurrió un error en el proceso de venta" });
+    }
+});
+
+
+app.get('/dataPventa', (req, res) => {
+    db.query('SELECT * FROM PRODUCTOS WHERE cantidad>0', (error, results, fields) => {
+      if (error) {
+        console.error('Database query error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+      res.json(results); 
+    });
+  });
+
+  app.get('/dataPventa', (req, res) => {
+    db.query('SELECT * FROM PRODUCTOS WHERE cantidad>0', (error, results, fields) => {
+      if (error) {
+        console.error('Database query error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+      res.json(results); 
+    });
+  });
+
+
+  app.post('/imprimir-ticket', (req, res) => {
+    const fonts = {
+        Roboto: {
+            normal: path.join(__dirname, 'fonts', 'JosefinSans-Regular.ttf'),
+            bold: path.join(__dirname, 'fonts', 'JosefinSans-Medium.ttf'),
+            italics: path.join(__dirname, 'fonts', 'JosefinSans-Italic.ttf'),
+            bolditalics: path.join(__dirname, 'fonts', 'JosefinSans-MediumItalic.ttf')
+        }
+    };
+
+    const body = [['Producto', 'Cantidad', 'Precio', 'Subtotal']];
+    req.body.data.forEach(row => {
+        body.push([
+            row.nombre,
+            row.cantidad.toString(),
+            `$${row.precio}`,
+            `$${row.precio * row.cantidad}`,
+        ]);
+    });
+
+    const dd = {
+        content: [
+            {
+                image: path.join(__dirname, 'img', 'faltantes_header.png'),
+                width: 530,
+                margin: [0, 0, 0, 20]
+            },
+            { text: 'Ticket de venta', style: 'header', alignment: 'center', margin: [0, 0, 0, 40] },
+            {
+                style: 'tableExample',
+                table: {
+                    widths: ['*', '*', '*', '*'],
+                    body
+                }
+            },
+            { text: `Total: $${req.body.costo}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 40] },
+            { text: `Pagó: $${req.body.pago}`,style: 'header', alignment: 'center', margin: [0, 0, 0, 40] },
+            { text: `Cambio: $${req.body.pago-req.body.costo}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 40] },
+        ],
+        styles: {
+            header: {
+                fontSize: 18,
+                bold: true
+            },
+            tableExample: {
+                margin: [0, 5, 0, 15]
+            }
+        }
+    };
+
+    const printer = new PdfPrinter(fonts);
+    const pdfDoc = printer.createPdfKitDocument(dd);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=ticket.pdf');
+
+    pdfDoc.pipe(res);
+    pdfDoc.end();
+});

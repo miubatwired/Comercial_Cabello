@@ -88,7 +88,7 @@ function DataTableComponent({searchTerm}) {
   const columns = [
     { name: 'Producto', selector: (row) => row.nombre, sortable: true },
     { name: 'Cantidad', selector: (row) => row.cantidad, sortable: true },
-    { name: 'Código', selector: (row) => row.codigo},
+    { name: 'Código', selector: (row) => row.codigo, sortable:true},
     { name: 'Precio', selector: (row) => row.precio, sortable: true },
     { name: 'Cantidad Mínima', selector: (row) => row.cantidad_minima, sortable: true},
     {

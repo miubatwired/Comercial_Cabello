@@ -1,8 +1,7 @@
 import './Modal.css'
-import PropTypes, { any } from 'prop-types';
+import PropTypes from 'prop-types';
 import axios from 'axios'
 import { useState } from 'react'
-import toast, { Toaster } from 'react-hot-toast';
 
 function AltaUsuariosModal({ closeModal }) {
     const [values, setValues] = useState({
@@ -35,7 +34,9 @@ function AltaUsuariosModal({ closeModal }) {
             console.log(values);
             axios.post('http://localhost:8081/register_user', values)
                 .then(res => {
-                    if (res.data.Status === 'Exito') {
+                    console.log(res.status)
+                    if (res.status === 200) {
+                        window.localStorage.setItem('showToast', 'Usuario creado con éxito');
                         window.location.reload();
                     } else {
                         if(res.data.Error.toLowerCase().includes("usuario")){
@@ -59,16 +60,16 @@ function AltaUsuariosModal({ closeModal }) {
                 newValue = value.slice(0, 30);
                 break;
             case 'apellido_paterno':
-                newValue = value.slice(0, 20); // Limit to 3 digits for 'cantidad_minima'
+                newValue = value.slice(0, 20); 
                 break;
             case 'apellido_materno':
-                newValue = value.slice(0, 20); // Limit to 2 digits for 'cantidad'
+                newValue = value.slice(0, 20); 
                 break;
             case 'contrasena':
-                newValue = value.slice(0, 20); // Limit to 5 digits for 'precio'
+                newValue = value.slice(0, 20); 
                 break;
             case 'confirmar_contrasena':
-                newValue = value.slice(0, 20); // Limit to 5 digits for 'precio'
+                newValue = value.slice(0, 20); 
                 break;
             default:
                 break;
@@ -76,7 +77,6 @@ function AltaUsuariosModal({ closeModal }) {
 
         setValues({ ...values, [name]: newValue });
     };
-
     const handleKeyDown = (e) => {
         const { name } = e.target;
         const maxLength = {
@@ -87,13 +87,17 @@ function AltaUsuariosModal({ closeModal }) {
         };
         const actualLength = values[name].replace(/\./g, '').length;
 
-        if (['codigo', 'cantidad_minima', 'cantidad', 'precio'].includes(name)) {
-            if( e.key === '-'){
+        if (['nombre', 'apellido_paterno', 'apellido_materno'].includes(name)) {
+            if( e.key === '-' || e.key === '?' || e.key === '!' || e.key === '@' || e.key === '#' || e.key === '$' 
+                || e.key === '%' || e.key === '^' || e.key === '&' || e.key === '*' || e.key === '(' || e.key === ')' 
+                || e.key === '+' || e.key === '=' || e.key === '{' || e.key === '}' || e.key === '[' || e.key === ']' 
+                || e.key === ':' || e.key === ';' || e.key === '"' || e.key === "'" || e.key === '<' || e.key === '>'
+                 || e.key === ',' || e.key === '.' || e.key === '/' || e.key === '\\'){
                 e.preventDefault();
             }
-            const inputElement = document.getElementById(name);
+            const inputElement = document.getElementById(name); 
             if(!isTextSelected(document.getElementById(inputElement))){
-                if (e.key !== 'Backspace' && e.key !== 'Delete' && e.key!=='Tab' && actualLength >= maxLength[name]) {
+                if (e.key in ['Backspace', 'Delete', 'Tab'] && actualLength >= maxLength[name]) {
                     e.preventDefault();
                 }
             }
@@ -111,7 +115,6 @@ function AltaUsuariosModal({ closeModal }) {
 
     return (
         <>
-            <div><Toaster /></div>
             <div className="modalBackground_user">
                 <div className="modalContainer_user">
                     <div className="header">
@@ -131,6 +134,7 @@ function AltaUsuariosModal({ closeModal }) {
                                         maxLength='35'
                                         value={values.nombre}
                                         onChange={handleChange}
+                                        onKeyDown={handleKeyDown}
                                     />
                                 </div>
                                 <div className='inputLabel_user'>
@@ -143,6 +147,7 @@ function AltaUsuariosModal({ closeModal }) {
                                         maxLength='35'
                                         value={values.apellido_paterno}
                                         onChange={handleChange}
+                                        onKeyDown={handleKeyDown}
                                     />
                                 </div>
                             </div>
@@ -158,6 +163,7 @@ function AltaUsuariosModal({ closeModal }) {
                                         maxLength='35'
                                         value={values.apellido_materno}
                                         onChange={handleChange}
+                                        onKeyDown={handleKeyDown}
                                     />
                                 </div>
                                 <div className='inputLabel_user'>
@@ -171,6 +177,7 @@ function AltaUsuariosModal({ closeModal }) {
                                         maxLength='35'
                                         value={values.usuario}
                                         onChange={handleChange}
+                                        onKeyDown={handleKeyDown}
                                     />
                                 </div>
                             </div>

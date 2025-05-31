@@ -117,7 +117,7 @@ function ModificacionProductosModal({ closeModal, codigo}) {
             <div className="modalBackground">
                 <div className="modalContainer">
                     <div className="header">
-                        Alta de Productos
+                        Modificación de Productos
                     </div>
                     <div className="forms">
                         <form onSubmit={handleSubmit}>

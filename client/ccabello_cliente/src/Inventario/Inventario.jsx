@@ -39,7 +39,6 @@ class Inventario extends Component {
     console.log('Component Mounted, isAuthenticated prop:', this.state.isAuthenticated);
     await this.verifyUser();
     const message = localStorage.getItem('showToast');
-    console.log(message);
     if (message) {
       toast.success(message);
       localStorage.removeItem('showToast');
